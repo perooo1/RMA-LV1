@@ -2,7 +2,7 @@ package com.plenart.yahtzee
 
 class GameController : CombinationChecker {
     private val player: Player = Player()
-    private var turn = 1
+    private var turn = 0
 
     fun startGame() {
         player.rollAllDice()
@@ -10,12 +10,7 @@ class GameController : CombinationChecker {
         do {
             displayCurrentHand()
             lockDice()
-
-            if (!isContinuing()) {
-                endTurn()
-                break;
-            }
-
+            println(checkCombinations())
             turn++
             player.rollRemainingDice()
             displayRolledRemainingDice()
@@ -26,17 +21,23 @@ class GameController : CombinationChecker {
     }
 
     private fun displayRolledRemainingDice() {
-        println("Rolled remaining dice: ")
-        for (die: Die in player.dice) {
-            if(!die.locked)
-                print("${die.value}, ")
+        if(turn==3)
+            displayCurrentHand()
+        else{
+            println("Rolled remaining dice: ")
+            for (die: Die in player.dice) {
+                if(!die.locked)
+                    print("${die.value}, ")
+            }
+            println()
+
         }
-        println()
+
     }
 
     private fun endTurn() {
         println("You have ended your turn.")
-        checkCombinations()
+        println(checkCombinations())
         println("Thank You for playing! :)")
     }
 
@@ -46,10 +47,8 @@ class GameController : CombinationChecker {
             it.isDigit()
         }?.toMutableList()
 
-        println("You locked Dices: \n")
         enteredValue?.let {
             for (i in enteredValue) {
-                print("$i, ")
                 for (die: Die in player.dice) {
                     val firstElementFound = player.dice.find { (it.value == i.digitToInt()) }
                     if ((die.value == firstElementFound?.value) && !die.locked) {
@@ -62,14 +61,25 @@ class GameController : CombinationChecker {
             }
         }
 
+        lockDiceOnEndTurn()
+        displayLockedDice()
+
     }
 
-    private fun isContinuing(): Boolean {
-        println("\nDo you wish to continue with the game?")
-        println("To stop the game type 'no', else press any key")
+    private fun displayLockedDice() {
+        println("Your locked dice:")
+        for(die: Die in player.dice){
+            if(die.locked)
+                print("${die.value}, ")
+        }
+    }
 
-        return readLine() != "no"
-
+    private fun lockDiceOnEndTurn() {
+        if(turn==3){
+            for(die: Die in player.dice){
+                die.locked = true;
+            }
+        }
     }
 
     private fun displayCurrentHand() {

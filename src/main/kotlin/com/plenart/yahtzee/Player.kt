@@ -2,7 +2,6 @@ package com.plenart.yahtzee
 
 class Player {
     val dice: ArrayList<Die> = arrayListOf()
-    //var continuing = true
 
     init{
         for(i in 1..6){
